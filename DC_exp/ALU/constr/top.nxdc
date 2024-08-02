@@ -1,0 +1,21 @@
+top=top
+
+# for single bit port, use "<port_name> <PIN_NAME>", as the follow example
+# uart_tx UART_TX
+# uart_rx UART_RX
+
+# for multi bits port, use "<port_name> (<PIN_NAME1>, <PIN_NAME2>, ... , <PIN_NAMEx>)", x is the port width
+# led (LD15, LD14, LD13, LD12, LD11, LD10, LD9, LD8, LD7, LD6, LD5, LD4, LD3, LD2, LD1, LD0)
+
+# op code
+opc (SW15, SW14, SW13)
+# input A and B
+A (SW7, SW6, SW5, SW4)
+B (SW3, SW2, SW1, SW0)
+
+carry LD0
+zero LD1
+overflow LD2
+
+seg0 (SEG0G, SEG0F, SEG0E, SEG0D, SEG0C, SEG0B, SEG0A)
+seg1 (SEG1G, SEG1F, SEG1E, SEG1D, SEG1C, SEG1B, SEG1A)
