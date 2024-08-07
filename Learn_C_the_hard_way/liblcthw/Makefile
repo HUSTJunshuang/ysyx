@@ -26,8 +26,8 @@ $(SO_TARGET): $(TARGET) $(OBJECTS)
 	$(CC) -shared -o $@ $(OBJECTS)
 
 # TODO any best methods?
-$(TESTS): $(TEST_SRC) $(TARGET)
-	$(CC) $(CFLAGS) -o $@ $@.c $(TARGET)
+# $(TESTS): $(TEST_SRC) $(TARGET)
+# 	$(CC) $(CFLAGS) -o $@ $@.c $(TARGET)
 
 build:
 	@mkdir -p build
@@ -35,8 +35,9 @@ build:
 
 # The Unit Tests
 .PHONY: tests
-# BUG the dependent file must be placed behind the caller file
+# BUG the dependent file must be placed behind the caller file, add to LDLIBS instead
 # tests: CFLAGS += $(TARGET)
+tests: LDLIBS += $(TARGET)
 tests: $(TESTS)
 	sh ./tests/runtests.sh
 
