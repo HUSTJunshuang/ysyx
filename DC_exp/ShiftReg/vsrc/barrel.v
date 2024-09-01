@@ -11,9 +11,10 @@ module barrel #(
     output [DWIDTH - 1 : 0] dout
 );
 
+    genvar i;
     generate
         wire [4 * (2 + 1) - 1 : 0] lut [DWIDTH - 1 : 0];
-        for (genvar i = 0; i < DWIDTH; i = i + 1) begin : barrel_muxes
+        for (i = 0; i < DWIDTH; i = i + 1) begin : barrel_muxes
             assign lut[i] = {{2'b11, (i < STEP_SIZE) ? 1'b0 : din[i - STEP_SIZE]}, {2'b10, din[i]},
                             {2'b01, (i + STEP_SIZE >= DWIDTH) ? sign_bit : din[i + STEP_SIZE]},
                             {2'b00, din[i]}};

@@ -6,8 +6,10 @@
 !*.[cSh]
 !*.v
 !*.nxdc
+!*.sdc
 !*.cc
 !*.cpp
 !.gitignore
 !README.md
 build/
+result/

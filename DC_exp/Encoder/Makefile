@@ -44,7 +44,10 @@ $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 sim: $(BIN)
 	@$^
 
-clean:
+clean: clean_sta
 	rm -rf $(BUILD_DIR)
+
+# include rules for sta
+include scripts/yosys-sta.mk
 
 .PHONY: all sim clean

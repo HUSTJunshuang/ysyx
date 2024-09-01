@@ -10,12 +10,13 @@ module priority_encoder #(
 );
 
     localparam INPUT_WIDTH = 1 << OUTPUT_WIDTH;
+    integer i;
 
     always @(*) begin
         if (en) begin
             out = 'h0;
             valid = |in;
-            for (integer i = 0; i < INPUT_WIDTH; i = i + 1) begin
+            for (i = 0; i < INPUT_WIDTH; i = i + 1) begin
                 if (in[i])  out = i[OUTPUT_WIDTH - 1 : 0];
             end
         end

@@ -12,8 +12,10 @@ module top(
     wire [1 : 0] x [3 : 0];
     wire [15 : 0] lut;
 
+    genvar i;
+
     generate
-        for (genvar i = 0; i < 4; i = i + 1) begin : dispatcher
+        for (i = 0; i < 4; i = i + 1) begin : dispatcher
             assign x[i] = sw[(i + 1) * 2 +: 2];
             assign lut[i * 4 +: 4] = {i[1 : 0], x[i]};
         end

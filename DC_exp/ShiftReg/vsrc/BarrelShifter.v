@@ -11,6 +11,7 @@ module BarrelShifter #(
 );
 
     localparam SDEPTH = $clog2(DWIDTH);
+    genvar i;
 
     wire sign_bit;
     wire [DWIDTH - 1 : 0] barrel_out [SDEPTH : 0];
@@ -18,7 +19,7 @@ module BarrelShifter #(
     assign dout = barrel_out[SDEPTH];
 
     generate
-        for (genvar i = 0; i < SDEPTH; i = i + 1) begin : shifter
+        for (i = 0; i < SDEPTH; i = i + 1) begin : shifter
             barrel #(
                 .DWIDTH     (DWIDTH),
                 .STEP_SIZE  (1 << i)
