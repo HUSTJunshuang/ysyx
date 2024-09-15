@@ -1,17 +1,21 @@
 `timescale 1ns/1ps
 
 module keyboard_controller (
-    input           clk,
-    input           rst,
-    input           ready,
-    input           overflow,
-    input [7 : 0]   data,
-    output          nextdata_n,
+    input               clk,
+    input               rst,
+    input               ready,
+    input               overflow,
+    input [7 : 0]       data,
+    output              nextdata_n,
     // just for check
-    output reg      CTRL,
-    output reg      SHIFT,
-    output reg      ALT,
-    output reg      CAPS
+    output reg [7 : 0]  scan_code_r,
+    output reg [7 : 0]  ascii_code_r,
+    output reg          valid,
+    output reg [7 : 0]  press_cnt,
+    output reg          CTRL,
+    output reg          SHIFT,
+    output reg          ALT,
+    output reg          CAPS
 );
 
     // special key
@@ -23,16 +27,20 @@ module keyboard_controller (
     // read data
     assign nextdata_n = ~ready;
 
-    // RELEASE & EXT
+    // RELEASE & EXT & counter
     always @(posedge clk) begin
         if (rst) begin
             RELEASE <= 1'b0;
             EXT <= 1'b0;
+            press_cnt <= 'h0;
         end
         else begin
             if (~nextdata_n) begin
                 // RELEASE
-                if (data == 8'hf0)      RELEASE <= 1'b1;
+                if (data == 8'hf0) begin
+                    RELEASE <= 1'b1;
+                    press_cnt <= press_cnt + 1'b1;
+                end
                 else if (data == 8'he0) RELEASE <= RELEASE;
                 else                    RELEASE <= 1'b0;
                 // EXT
@@ -75,6 +83,9 @@ module keyboard_controller (
     );
     always @(posedge clk) begin
         if (rst) begin
+            scan_code_r <= 'h0;
+            ascii_code_r <= 'h0;
+            valid <= 1'b0;
         end
         else begin
             if (~nextdata_n && ~RELEASE) begin
@@ -90,7 +101,12 @@ module keyboard_controller (
                         8'h69 : $display("<End>");
                         8'h7d : $display("<Page Up>");
                         8'h7a : $display("<Page Down>");
-                        default : $display("%0c(0x%0x)", ascii_code, ascii_code);
+                        default : begin
+                            $display("%0c(0x%0x)", ascii_code, ascii_code);
+                            scan_code_r <= data;
+                            ascii_code_r <= ascii_code;
+                            valid <= 1'b1;
+                        end
                     endcase
                 end
                 else if (SHIFT) begin
@@ -122,9 +138,15 @@ module keyboard_controller (
                         default : begin
                             if (ascii_code >= 8'h61 && ascii_code <= 8'h7a) begin
                                 $display("%0c(0x%0x)", CAPS ? ascii_code : (ascii_code - 8'h20), CAPS ? ascii_code : (ascii_code - 8'h20));
+                                scan_code_r <= data;
+                                ascii_code_r <= CAPS ? ascii_code : (ascii_code - 8'h20);
+                                valid <= 1'b1;
                             end
                             else begin
                                 $display("%0c(0x%0x)", ascii_code, ascii_code);
+                                scan_code_r <= data;
+                                ascii_code_r <= ascii_code;
+                                valid <= 1'b1;
                             end
                         end
                     endcase
@@ -132,10 +154,23 @@ module keyboard_controller (
                 else begin
                     if (ascii_code >= 8'h61 && ascii_code <= 8'h7a) begin
                         $display("%0c(0x%0x)", CAPS ? (ascii_code - 8'h20) : ascii_code, CAPS ? (ascii_code - 8'h20) : ascii_code);
+                        scan_code_r <= data;
+                        ascii_code_r <= CAPS ? (ascii_code - 8'h20) : ascii_code;
+                        valid <= 1'b1;
                     end
                     else begin
                         $display("%0c(0x%0x)", ascii_code, ascii_code);
+                        scan_code_r <= data;
+                        ascii_code_r <= ascii_code;
+                        valid <= 1'b1;
                     end
+                end
+            end
+            else begin
+                if (RELEASE) begin
+                    scan_code_r <= 'h0;
+                    ascii_code_r <= 'h0;
+                    valid <= 1'b0;
                 end
             end
         end
